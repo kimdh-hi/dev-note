@@ -93,3 +93,28 @@ spring:
           allow_jdbc_metadata_access: false
 
 ```
+
+### JVM AOT Cache 적용 결과 측정
+
+```
+결과 측정
+- 이미지 크기
+  - 적용 전: 519MB (-cds base: 375MB)
+  - 적용 후: 649MB (base: 312MB, aot: 193MB)
+- JVM 시작 -> 기동 완료까지의 소요 시간
+  - 적용 전: 10.3~11.2
+  - 적용 후: 5.9~6.0
+- 웜업
+  - 적용 전/후 5.6~5.8 (변화 없음)
+- JVM 시작 → ready
+  - 적용 전: 약 16~18초
+  - 적용 후: 약 11.6초  
+```
+
+## Reference
+
+- claude
+- JVM AOT Cache
+    - https://docs.spring.io/spring-boot/reference/packaging/aot-cache.html
+    - https://openjdk.org/jeps/515
+    - https://openjdk.org/jeps/483
