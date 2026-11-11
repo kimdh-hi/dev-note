@@ -1,0 +1,37 @@
+# AWS Elastic IP
+
+## Elastic IP (EIP)
+
+- 동적인 클라우드 환경에서 만든 고정 IPv4 주소
+- EIP 는 aws 계정에 할당되며 직접 반환(release) 하기 전까지 계정 소유로 남는다.
+- 공인 IP 이므로 인스턴스에 EIP 연결시 인터넷 통신 가능
+- EC2 인스턴스는 EIP 없이도 공인 IP 할당 가능
+- 단, 자동 할당되는 공인 IP는 amazone의 공인 IPv4 풀로부터 할당되므로 내 계정에 묶이지 않음.
+    - 인스턴스로부터 공인 IP 분리되면 풀로 반환되고 동일 공인IP 다시 재사용 불가
+    - 인스턴스 stop, hibernate(최대 절전), terminate 시 공인 IP는 풀로 반환되고 재시작시 새 공인 IP가 할당
+
+## EIP 연결 가능 서비스 종류
+
+- EC2
+- ENI (네트워크 인터페이스)
+- 퍼블릭 NAT 게이트웨이 (EIP 연결 필수)
+- NLB
+    - ALB 는 EIP 할당 불가
+    - NLB에 EIP 를 연결하지 않아도 자동 할당되는 공인 IP는 NLB 살아있는 동안 고정됨
+    - 단, EIP 사용시 NLB 의 공인 ip를 생성 전에 미리 알 수 있고, ip 재사용 가능
+- AWS Transfer Family
+
+## 비용
+
+- 사용중 여부와 관계없이 공인 IP 각각 시간당 $0.005
+    - EIP 뿐만 아니라 자동 할당된 공인 ip 도 EIP와 동일 단가로 과금
+    - https://aws.amazon.com/ko/blogs/aws/new-aws-public-ipv4-address-charge-public-ip-insights/
+    - 실제 사용되지 않는 EIP 는 유휴상태로 두어도 과금되니 과금 막으려면 release 필요
+- aws 각 계정은 기본적으로 리전당 EIP 5개로 제한
+    - 할당량 증가 요청 통해 제한 상향 조정 필요
+
+## Reference
+
+- https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/elastic-ip-addresses-eip.html
+- https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/working-with-eips.html
+- https://docs.aws.amazon.com/elasticloadbalancing/latest/network/create-network-load-balancer.html
