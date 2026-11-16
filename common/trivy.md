@@ -81,6 +81,17 @@ allow-rules:
   - https://opensource.google/documentation/reference/thirdparty/licenses
 - google 이 라이센스별로 등급을 정해둔 것을 trivy 는 CRITICAL/HIGH/LOW 로 매핑하여 규칙으로 사용 (커스텀 가능)
 
+## 2026/3 Trivy 공급망 공격 이슈
+
+- 공격자는 탈취한 자격증명으로 2026/3/18 Trivy v0.69.4 악성 릴리즈 배포
+    - github 토큰(PAT) 탈취당하여 trivy 의 공식 릴리즈 파이프라인이 자동으로 빌드/배포
+    - v0.69.4 버전에 악성 릴리즈 배포
+    - 결과적으로 3/22 docker hub에 악성이미지 (0.69.5, 0.69.6) 업로드
+- `:latest` 도커 이미지를 사용하거나, action tag(trivy-action) 사용하는 경우 의도치 않게 공격자가 올린 최신 릴리즈 받아서 사용 됨
+    - image digest 를 지정하고나 최소 docker image tag 를 지정한 경우 공격자의 것을 의도치않게 받지 않았으므로 안전
+    - 단, docker image tag 의 경우에도 덮어쓰기가 가능하므로 digest 보다 취약
+    - 공급망 공격이 우려되는 경우 digest 를 사용.
+- https://github.com/aquasecurity/trivy/security/advisories/GHSA-69fq-xp46-6x23
 
 ## Reference
 - https://trivy.dev/docs/latest/guide/
