@@ -48,10 +48,59 @@ X-Signature: NfiAzUzkkLSr1truBqpeA2aTxQbaLAGpJxQX2C/4zcY=
 
 ### OAuth Client Credentials (private_key_jwt)
 
+- client_secret(대칭키)를 발급하지 않고 클라이언트 측에서 공개키/개인키를 생성 및 관리하며 공개키를 인가 서버에 등록하여, 인가서버로부터 신원을 증명
+    - 이 방식에 client_secret(대칭키) 는 사용되지 않음
 - 위 방식에서 client_secret 대신, 개인키로 서명한 JWT(client assertion)로 클라이언트를 인증
-    - 필수 claim: `iss`, `sub`(= client_id), `aud`(토큰 엔드포인트), `jti`(1회용), `exp`
 - 인가 서버에는 공개키만 등록하므로, 인증 서버가 유출돼도 클라이언트를 사칭 불가
-- 보호 범위는 토큰 발급 단계뿐이고, 발급된 access token은 여전히 Bearer
+- 보호 범위는 토큰 발급 단계뿐이고, 발급된 AT는 공개
+
+```
+1. 클라이언트 측에서 키 쌍 생성
+2. 개인키는 클라이언트 측에서 안전하게 보관 (KMS...)
+3. 공개키를 인가 서버에 등록
+- jwks_uri: 클라이언트가 공개키 JWK Set 을 URL로 공개하고, 클라이언트 등록시 jwks_uri 를 등록
+  인가서버는 jwtks_uri 통해 클라이언트 공개키 획득
+- jwks: 공개키 JWT Set을 클라이언트 등록 정보에 포함
+4. 인가서버로 AT 요청 (POST /oauth2/token)
+- client_id 포함 (client_secret X)
+- client_assertion 포함 => 개인키로 서명한 JWT(JWS) 생성하여 
+- client_assertion 은 매 요청마다 새롭게 생성하며, kid, aud, jti, exp 필수 클레임을 포함
+5. 서버는 client_id 로 해당 클라이언트의 공개키를 찾아 client_assertion 서명 검증 후 AT 발행 
+
+```
+
+```
+# jwks_uri 등록시 예시
+{
+  "client_name": "clientA",
+  "grant_types": ["client_credentials"],
+  "token_endpoint_auth_method": "private_key_jwt",
+  "token_endpoint_auth_signing_alg": "RS256",
+  "scope": "clientA.write",
+  "jwks_uri": "https://client-a.example.com/.well-known/jwks.json"
+}
+
+# jwks 등록 예시
+{
+  "client_name": "clientA",
+  "grant_types": ["client_credentials"],
+  "token_endpoint_auth_method": "private_key_jwt",
+  "token_endpoint_auth_signing_alg": "RS256",
+  "scope": "clientA.write",
+  "jwks": {
+    "keys": [
+      {
+        "kty": "RSA",
+        "kid": "client-a-2026-11",
+        "use": "sig",
+        "alg": "RS256",
+        "e": "AQAB",
+        "n": "nj3YJwsLUFl9BmpAbkOswCNVx17Eh9wMO-_AReZwBqfa..."
+      }
+    ]
+  }
+}
+```
 
 ## 참고 문서
 
