@@ -1,3 +1,41 @@
+# Passkeys
+
+## passkey?
+
+### FIDO/FIDO2
+
+- 비밀번호 없는 인증/2단계 인증 등 표준을 만드는 업계 단체
+- FIDO2 는 FIDO Alliance가 만든 개방형 인증 표준
+
+### WebAuthn (Web Authentication)
+
+- FIDO2를 구성하는 표준 중 하나
+- 표준
+    - RP 서버로부터 받은 challenge, rpid 등을 FE(RP 웹페에지) 에서 브라우저로 키쌍을 등록하는 api 표준
+        - `create()`: 등록 - 인증기에 키 쌍을 만들고, 공개키를 응답 받음
+    - 브라우저 → 인증기로 사용자 인증 통해 인증 완료 후 서명 결과 응답 표준
+        - `get()`: 인증 - 기존 키로 challenge에 서명하고, 서명을 응답 받음
+    - RP서버에서 공개키로 서명을 검증하는 검증 절차에 대한 표준
+- RP 가 공개키 자격증명을 등록하고 검증하는 방식을 정함
+
+### CTAP (Client to Authenticator Protocols)
+
+- FIDO2를 구성하는 표준 중 하나 (클라이언트 ↔ 인증기)
+    - 외부 장치 인증기(USB, NFC, BLE 등) 과 데이터를 주고받는 방법 표준
+    - 기기 내장 인증기인 경우 CTAP 아닐 수 있음.
+- 브라우저/OS 와 인증기(휴대폰/보안키) 사이 통신 규약
+
+### Passkey
+
+- 자격증명
+- 위 표준으로 만들어지는 공개키/개인키 쌍
+- 단, 위 표준으로 만들지는 공개키/개인키 쌍 모두를 passkey 라고 지칭하진 않음.
+    - discoverable 자격증명
+    - 인증기에 개인키와 함께 계정 정보(user handle) 도 저장되어야 함.
+    - 인증기가 RP 서버의 도움(credential ID) 없이 스스로 PR ID 기반으로 자격 증명을 찾아낼 수 있는지
+    - 일반적으로 위 여부와 관계없이 passkey 라고 부르기도 함.
+
+
 ## passkey 등록/인증 Flow
 
 - flow
@@ -221,7 +259,7 @@ verify(공개키, authenticatorData + clientDataJSON 해시, 서명)
 ```
 
 ## Reference
-
+- https://www.passkeycentral.org/ko/introduction-to-passkeys/how-passkeys-work
 - https://docs.spring.io/spring-security/reference/servlet/authentication/passkeys.html
 - https://www.w3.org/TR/webauthn-3/
 - https://auth-wiki.logto.io/ko/webauthn
